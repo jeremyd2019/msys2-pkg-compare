@@ -20,7 +20,7 @@ jobs:
             find t -mindepth 1 -maxdepth 1 -newer ref -printf "%T@\t%Tc\t%P\n" | sort -n | cut -f 2-
           fi
           echo "::set-output name=msys2_db_last_modified::$(stat -c '%Y' msys.db.tar.gz)"
-    - uses: jeremyd2019/store-secret
+    - uses: jeremyd2019/store-secret@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
