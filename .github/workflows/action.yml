@@ -13,7 +13,7 @@ jobs:
       run: |
           touch -d @${MSYS2_DB_LAST_MODIFIED} msys.db.tar.gz
           wget -N https://repo.msys2.org/msys/x86_64/msys.db.tar.gz
-          if [ "$MSYS2_DB_LAST_MODIFIED}" -lt "$(stat -c '%Y' msys.db.tar.gz)" ]; then
+          if [ "$MSYS2_DB_LAST_MODIFIED" -lt "$(stat -c '%Y' msys.db.tar.gz)" ]; then
             touch -d @${MSYS2_DB_LAST_MODIFIED} ref
             rm -rf t
             mkdir t && tar -C t -zxf msys2.db.tar.gz
