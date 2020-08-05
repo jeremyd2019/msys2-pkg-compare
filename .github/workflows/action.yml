@@ -16,7 +16,7 @@ jobs:
           if [ "$MSYS2_DB_LAST_MODIFIED" -lt "$(stat -c '%Y' msys.db.tar.gz)" ]; then
             touch -d @${MSYS2_DB_LAST_MODIFIED} ref
             rm -rf t
-            mkdir t && tar -C t -zxf msys2.db.tar.gz
+            mkdir t && tar -C t -zxf msys.db.tar.gz
             find t -mindepth 1 -maxdepth 1 -newer ref -printf "%T@\t%Tc\t%P\n" | sort -n | cut -f 2-
           fi
           echo "::set-output name=msys2_db_last_modified::$(stat -c '%Y' msys.db.tar.gz)"
