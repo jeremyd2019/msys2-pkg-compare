@@ -17,10 +17,10 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: simpleactions/create-tag@v1.0.0
+    - uses: jeremyd2019/store-tag@v1
       id: tagger
       with:
-        tag: storage
-        message: test2
+        name: storage
+        value: test2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
