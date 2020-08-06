@@ -21,6 +21,6 @@ jobs:
       id: tagger
       with:
         tag: storage
-        message: test1
+        message: test2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
