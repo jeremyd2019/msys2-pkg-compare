@@ -20,7 +20,9 @@ jobs:
     - uses: jeremyd2019/store-tag@v1
       id: tagger
       with:
+        action: retrieve
         name: storage
-        value: test2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - run: echo "${{ steps.tagger.outputs.value }}"
+    
