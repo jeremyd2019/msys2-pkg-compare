@@ -7,23 +7,32 @@ jobs:
   pkg_compare:
     runs-on: ubuntu-latest
     steps:
+    - id: db_last_modified
+      uses: jeremyd2019/store-tag@v1
+      with:
+        action: retrieve
+        name: store_db_lastmodified
+      continue-on-error: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - id: pkg_compare
       env:
-        MSYS2_DB_LAST_MODIFIED: ${{ secrets.MSYS2_DB_LAST_MODIFIED }}
+        MSYS2_DB_LAST_MODIFIED: ${{ steps.db_last_modified.outputs.value }}
       run: |
-          touch -d @${MSYS2_DB_LAST_MODIFIED} msys.db.tar.gz
+          touch -d @${MSYS2_DB_LAST_MODIFIED:-0} msys.db.tar.gz
           wget -qN https://repo.msys2.org/msys/x86_64/msys.db.tar.gz
-          if [ "$MSYS2_DB_LAST_MODIFIED" -lt "$(stat -c '%Y' msys.db.tar.gz)" ]; then
-            touch -d @${MSYS2_DB_LAST_MODIFIED} ref
+          if [ "${MSYS2_DB_LAST_MODIFIED:-0}" -lt "$(stat -c '%Y' msys.db.tar.gz)" ]; then
+            touch -d @${MSYS2_DB_LAST_MODIFIED:-0} ref
             rm -rf t
             mkdir t && tar -C t -zxf msys.db.tar.gz
             find t -mindepth 1 -maxdepth 1 -newer ref -printf "%T@\t%Tc\t%P\n" | sort -n | cut -f 2-
           fi
           echo "::set-output name=msys2_db_last_modified::$(stat -c '%Y' msys.db.tar.gz)"
-    - uses: jeremyd2019/store-secret@v1
+    - uses: jeremyd2019/store-tag@v1
+      if: ${{ steps.db_last_modified.outputs.value != steps.pkg_compare.outputs.msys2_db_last_modified }}
       env:
-        GITHUB_TOKEN: ${{ secrets.STORE_SECRETS_PAT }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        name: MSYS2_DB_LAST_MODIFIED
+        action: store
+        name: store_db_lastmodified
         value: ${{ steps.pkg_compare.outputs.msys2_db_last_modified }}
- 
