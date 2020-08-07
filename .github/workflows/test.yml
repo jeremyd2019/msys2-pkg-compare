@@ -20,8 +20,8 @@ jobs:
     - uses: jeremyd2019/store-git@v1
       id: storage
       with:
-        action: store
+        action: retrieve
         name: store_db_lastmodified
-        value: 1588230000
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - run: echo "${{ steps.storage.outputs.value }}"
