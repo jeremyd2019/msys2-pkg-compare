@@ -17,12 +17,11 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: jeremyd2019/store-tag@v1
-      id: tagger
+    - uses: jeremyd2019/store-git@v1
+      id: storage
       with:
-        action: retrieve
-        name: storage
+        action: store
+        name: store_db_lastmodified
+        value: 1588230000
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - run: echo "${{ steps.tagger.outputs.value }}"
-    
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}}"
