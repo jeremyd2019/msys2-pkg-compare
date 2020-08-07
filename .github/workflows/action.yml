@@ -33,11 +33,15 @@ jobs:
             touch -d "@$(($MSYS2_DB_LAST_MODIFIED))" ref
             rm -rf t
             mkdir t && tar -C t -zxf msys.db.tar.gz
-            find t -mindepth 1 -maxdepth 1 -newer ref -printf "%T@\t%Tc\t%P\n" | sort -n | cut -f 2-
+            find t -mindepth 1 -maxdepth 1 -newer ref -printf "%T@\t%Tc\t%P\n" | sort -n | cut -f 2- | tee >(wc -l > num)
           fi
           echo "::set-output name=msys2_db_last_modified::$(stat -c '%Y' msys.db.tar.gz)"
+          if [ -f num ] && [ $(($(<num))) -gt 0 ]; then
+            echo "::error ::$(<num) new or updated packages"
+            exit 1
+          fi
     - uses: jeremyd2019/store-git@v1
-      if: ${{ steps.db_last_modified.outputs.value != steps.pkg_compare.outputs.msys2_db_last_modified }}
+      if: ${{ (success() || failure()) && steps.db_last_modified.outputs.value != steps.pkg_compare.outputs.msys2_db_last_modified }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
