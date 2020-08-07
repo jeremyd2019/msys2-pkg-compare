@@ -24,4 +24,4 @@ jobs:
         name: store_db_lastmodified
         value: 1588230000
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}}"
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}"
