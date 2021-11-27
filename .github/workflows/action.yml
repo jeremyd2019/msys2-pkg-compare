@@ -10,6 +10,8 @@ jobs:
   pkg_compare:
     runs-on: ubuntu-latest
     steps:
+    - name: Install ZSTD
+      run: sudo apt-get -y install zstd
     - id: db_last_modified
       uses: jeremyd2019/store-git@v1
       with:
@@ -27,15 +29,15 @@ jobs:
           else
             MSYS2_DB_LAST_MODIFIED=0
           fi
-          touch -d "@$(($MSYS2_DB_LAST_MODIFIED))" msys.db.tar.gz
-          wget -qN https://repo.msys2.org/msys/x86_64/msys.db.tar.gz
-          if [ "$(($MSYS2_DB_LAST_MODIFIED))" -lt "$(stat -c '%Y' msys.db.tar.gz)" ]; then
+          touch -d "@$(($MSYS2_DB_LAST_MODIFIED))" msys.db.tar.zstd
+          wget -qN https://repo.msys2.org/msys/x86_64/msys.db.tar.zstd
+          if [ "$(($MSYS2_DB_LAST_MODIFIED))" -lt "$(stat -c '%Y' msys.db.tar.zstd)" ]; then
             touch -d "@$(($MSYS2_DB_LAST_MODIFIED))" ref
             rm -rf t
-            mkdir t && tar -C t -zxf msys.db.tar.gz
+            mkdir t && zstd -dc msys.db.tar.zstd | tar -C t -xf -
             find t -mindepth 1 -maxdepth 1 -newer ref -printf "%T@\t%Tc\t%P\n" | sort -n | cut -f 2- | tee >(wc -l > num)
           fi
-          echo "::set-output name=msys2_db_last_modified::$(stat -c '%Y' msys.db.tar.gz)"
+          echo "::set-output name=msys2_db_last_modified::$(stat -c '%Y' msys.db.tar.zstd)"
           if [ -f num ] && [ $(($(<num))) -gt 0 ]; then
             echo "::error ::$(<num) new or updated packages"
             exit 1
